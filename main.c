@@ -448,8 +448,8 @@ static int DecryptPRX1(const u8* pbIn, u8* pbOut, int cbTotal, u32 tag)
         return -1;
     }	
 	
-    return cbTotal - 0x150; // rounded up size
-	//return retsize; 
+    //return cbTotal - 0x150; // rounded up size
+	return retsize; 
 }
 
 //////////Decryption2//////////
