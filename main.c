@@ -1316,6 +1316,10 @@ void hexDump(const void *data, size_t size) {
   printf("\n");
 }
 
+u8 elf_magic[4] = {
+	0x7F, 0x45, 0x4C, 0x46
+};
+
 u8 gzip_magic[3] = {
 	0x1F, 0x8B, 0x08
 };
@@ -1347,6 +1351,15 @@ int DecryptFile(char *input, char *output)
 	{
 		printf("Error: cannot read %s.\n", input);
 		return -1;
+	}
+	
+	if memcmp(buffer,elf_magic,4)==0){
+		printf("just an elf, writing to %s");
+		if (WriteFile(output, buffer, size) != size)
+		{
+			printf("Error writing/creating %s.\n", output);
+			return -1;
+		}
 	}
 
 	int res = pspDecryptPRX(buffer, buffer, size);
