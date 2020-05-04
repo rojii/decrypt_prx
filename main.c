@@ -1332,10 +1332,6 @@ u8 kl3e_magic[4] = {
 	0x4B, 0x4C, 0x33, 0x45
 };
 
-u8 elf_magic[4] = {
-	0x7F, 0x45, 0x4C, 0x46
-};
-
 u8 bin_ext[4] = {
 	0x2E, 0x62, 0x69, 0x6E
 };
@@ -1353,13 +1349,14 @@ int DecryptFile(char *input, char *output)
 		return -1;
 	}
 	
-	if memcmp(buffer,elf_magic,4)==0){
-		printf("just an elf, writing to %s");
+	if (memcmp(buffer,elf_magic,4)==0){
+		printf("just an elf, writing to %s\n",output);
 		if (WriteFile(output, buffer, size) != size)
 		{
 			printf("Error writing/creating %s.\n", output);
 			return -1;
 		}
+		return 0;
 	}
 
 	int res = pspDecryptPRX(buffer, buffer, size);
