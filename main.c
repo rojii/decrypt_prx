@@ -1361,6 +1361,9 @@ int DecryptFile(char *input, char *output)
 
 	int res = pspDecryptPRX(buffer, buffer, size);
 
+	int len = strlen(input);
+	const char *last_four = &input[len-4];
+	
 	if (res < 0)
 	{
 		printf("Error decrypting %s.\n", input);
@@ -1382,9 +1385,7 @@ int DecryptFile(char *input, char *output)
 		sprintf(str2,"gzip -dqf %s", str);
 		fp = popen(str2, "w");
 		pclose(fp);
-	}
-	
-	if(memcmp(buffer,kl4e_magic,4)==0){
+	}else if(memcmp(buffer,kl4e_magic,4)==0){
 		char str[256];
 		sprintf(str,"%s.kl4e", output);
 		if (WriteFile(str, buffer, res) != res)
@@ -1392,8 +1393,7 @@ int DecryptFile(char *input, char *output)
 			printf("Error writing/creating %s.\n", str);
 			return -1;
 		}
-	}
-	if(memcmp(buffer,"2RLZ",4)==0){
+	}else if(memcmp(buffer,"2RLZ",4)==0){
 		char str[256];
 		sprintf(str,"%s.2rlz", output);
 		if (WriteFile(str, buffer, res) != res)
@@ -1401,9 +1401,7 @@ int DecryptFile(char *input, char *output)
 			printf("Error writing/creating %s.\n", str);
 			return -1;
 		}
-	}
-
-	if(memcmp(buffer,kl3e_magic,4)==0){
+	}else if(memcmp(buffer,kl3e_magic,4)==0){
 		char str[256];
 		sprintf(str,"%s.kl3e", output);
 		if (WriteFile(str, buffer, res) != res)
@@ -1411,21 +1409,20 @@ int DecryptFile(char *input, char *output)
 			printf("Error writing/creating %s.\n", str);
 			return -1;
 		}
-	}
-	
-	if(memcmp(buffer,elf_magic,4)==0){
+	}else if(memcmp(buffer,elf_magic,4)==0){
 		if (WriteFile(output, buffer, res) != res)
 		{
 			printf("Error writing/creating %s.\n", output);
 			return -1;
 		}
-	}
-	
-	int len = strlen(input);
-	const char *last_four = &input[len-4];
-	
-	if(memcmp(last_four,bin_ext,4)==0){
+	}else if(memcmp(last_four,bin_ext,4)==0){
 		if (WriteFile(output, buffer, res) != res)
+		{
+			printf("Error writing/creating %s.\n", output);
+			return -1;
+		}
+	}else{
+		if (WriteFile(output, buffer, size) != size)
 		{
 			printf("Error writing/creating %s.\n", output);
 			return -1;
